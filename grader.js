@@ -20,12 +20,22 @@ var cheerioHtmlFile = function(htmlfile) {
     return cheerio.load(fs.readFileSync(htmlfile));
 };
 
+var cheerioUrl = function(url){
+    rest.get(url).on('complete', function($) {
+            sys.puts($); // auto convert to object
+        });
+    return cheerio.load($); 
+}
+
 var loadChecks = function(checksfile) {
     return JSON.parse(fs.readFileSync(checksfile));
 };
 
-var checkHtmlFile = function(htmlfile, checksfile) {
-    $ = cheerioHtmlFile(htmlfile);
+var checkHtmlFile = function(sorceName, checksfile,sourceType) {
+    if(sourceType=="file")
+        $ = cheerioHtmlFile(sourceName);
+    if(sourceType=="url")
+        $ = cherrioUrl(sourceName);
     var checks = loadChecks(checksfile).sort();
     var out = {};
     for(var ii in checks) {
@@ -45,10 +55,19 @@ if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+        .option('-u, --url <url>', 'url to index.html' )
         .parse(process.argv);
-    var checkJson = checkHtmlFile(program.file, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+    if(program.checks && program.url)
+        console.log("Cannot parse two source")
+    else
+    {
+        if(program.checks)
+            var checkJson = checkHtmlFile(program.file, program.checks,"file");
+        if(program.url)
+            var checkJson = checkHtmlFile(program.file, program.checks,"url");
+        var outJson = JSON.stringify(checkJson, null, 4);
+        console.log(outJson);
+    }
 } else {
     exports.checkHtmlFile = checkHtmlFile;
 }
