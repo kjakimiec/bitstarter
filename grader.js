@@ -57,11 +57,11 @@ if(require.main == module) {
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
         .option('-u, --url <url>', 'url to index.html' )
         .parse(process.argv);
-    if(program.checks && program.url)
+    if(program.file && program.url)
         console.log("Cannot parse two source")
     else
     {
-        if(program.checks)
+        if(program.file)
             var checkJson = checkHtmlFile(program.file, program.checks,"file");
         if(program.url)
             var checkJson = checkHtmlFile(program.file, program.checks,"url");
