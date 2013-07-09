@@ -31,11 +31,11 @@ var loadChecks = function(checksfile) {
     return JSON.parse(fs.readFileSync(checksfile));
 };
 
-var checkHtmlFile = function(sorceName, checksfile,sourceType) {
+var checkHtmlFile = function(sourceName, checksfile,sourceType) {
     if(sourceType=="file")
         $ = cheerioHtmlFile(sourceName);
     if(sourceType=="url")
-        $ = cherrioUrl(sourceName);
+        $ = cheerioUrl(sourceName);
     var checks = loadChecks(checksfile).sort();
     var out = {};
     for(var ii in checks) {
@@ -53,12 +53,13 @@ var clone = function(fn) {
 
 if(require.main == module) {
     program
-        .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
-        .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+        .option('-c, --checks <check_file>', 'Path to checks.json')
+        .option('-f, --file <html_file>', 'Path to index.html')
         .option('-u, --url <url>', 'url to index.html' )
         .parse(process.argv);
+console.log(program.file);
     if(program.file && program.url)
-        console.log("Cannot parse two source")
+        console.log("Cannot parse two source");
     else
     {
         if(program.file)
